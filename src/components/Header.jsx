@@ -1,30 +1,53 @@
-import React from 'react';
-import '../assets/styles/components/Header.scss';
-import { Link } from 'react-router-dom';
-import logo from '../assets/static/logo-platzi-video-BW2.png';
-import userIcon from '../assets/static/user-icon.png';
+import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
+import Header from '../components/Header';
+import Search from '../components/Search';
+import Categories from '../components/Categories';
+import Carousel from '../components/Carousel';
+import CarouselItem from '../components/CarouselItem';
+import useInitialState from '../hooks/useInitialState';
+import '../assets/styles/App.scss';
 
-const Header = () => (
-  <header className='header'>
-    <Link to='/'>
-      <img className='header__img' src={logo} alt='Platzi Video' />
-    </Link>
-
-    <div className='header__menu'>
-      <div className='header__menu--profile'>
-        <img src={userIcon} alt='' />
-        <p>Perfil</p>
-      </div>
-      <ul>
-        <li><a href='/'>Cuenta</a></li>
-        <li>
-          <Link to='/login'>
-                Iniciar sesión
-          </Link>
-        </li>
-      </ul>
-    </div>
-  </header>
-);
-
-export default Header;
+const Home = ({ myList, trends, originals }) => {
+  return (
+    <>
+      <Header />
+      <Search isHome />
+      {myList.length > 0 &&
+        <Categories title="Mi Lista">
+          <Carousel>
+            {myList.map(item =>
+              <CarouselItem 
+                key={item.id} 
+                {...item}
+                isList
+              />
+            )}
+          </Carousel>
+        </Categories>
+      }
+      <Categories title="Tendencias">
+        <Carousel>
+          {trends.map(item =>
+            <CarouselItem key={item.id} {...item} />
+          )}
+        </Carousel>
+      </Categories>
+      <Categories title="Originales de Platzi Video">
+        <Carousel>
+          {originals.map(item =>
+            <CarouselItem key={item.id} {...item} />
+          )}
+        </Carousel>
+      </Categories>
+    </>
+  );
+}
+const mapStateToProps = state => {
+  return {
+    myList: state.myList,
+    trends: state.trends,
+    originals: state.originals,
+  };
+};
+export default connect(mapStateToProps, null)(Home);
